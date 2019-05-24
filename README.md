@@ -27,6 +27,8 @@ P will be between 1 and 1000.
 ## How to run
 
 ```
+./gradlew clean build
+
 ./gradlew bootRun
 ```
 
