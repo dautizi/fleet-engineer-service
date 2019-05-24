@@ -1,0 +1,71 @@
+buildscript {
+    ext {
+        springBootVersion = "1.5.21.RELEASE"
+        lombokVersion = "1.18.8"
+    }
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+    }
+}
+
+plugins {
+    id "net.ltgt.apt" version "0.10"
+}
+
+apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'groovy'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+//---------------------------------
+// Configurations
+//---------------------------------
+configurations {
+    integrationTestCompile.extendsFrom testCompile
+    integrationTestCompile.extendsFrom testRuntime
+
+    // Providing a separate configuration for Lombok itself
+    lombok
+}
+
+sourceSets {
+    integrationTest {
+        compileClasspath += main.output + test.output
+        runtimeClasspath += main.output + test.output
+
+        groovy.srcDir file("src/integration/groovy")
+        java.srcDir file("src/integration/java")
+
+        resources.srcDir file('src/integration/resources')
+    }
+}
+
+ext["spock.version"] = "1.1-groovy-2.4"
+
+dependencies {
+    compile("org.projectlombok:lombok:${lombokVersion}")
+    apt("org.projectlombok:lombok:${lombokVersion}")
+
+    compile("org.springframework.boot:spring-boot-starter-web")
+
+    compile("org.mock-server:mockserver-netty:5.5.4")
+    compile("io.rest-assured:rest-assured:4.0.0")
+
+    testCompile("org.springframework.boot:spring-boot-starter-test")
+    testCompile("org.spockframework:spock-core")
+    testCompile("org.spockframework:spock-spring")
+
+    integrationTestCompile("org.mock-server:mockserver-netty:5.5.4")
+    integrationTestCompile("io.rest-assured:rest-assured:4.0.0")
+}
